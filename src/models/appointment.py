@@ -4,6 +4,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from db import Database
+
 
 class AppointmentType(Enum):
     ASSESSMENT_SESSION_1 = "ASSESSMENT_SESSION_1"
@@ -49,3 +51,21 @@ class Appointment(BaseModel):
 
     updated_at: datetime = Field(default_factory=datetime.now)
     """Timestamp when this appointment was most recently updated"""
+
+    @classmethod
+    def load(
+        cls,
+        conn: Database,
+        /,
+        clinician_id: str | None = None,
+        patient_id: str | None = None,
+    ):
+        """
+        Fetch all appointments from the "database"
+        """
+        return [
+            cls.model_validate(appointment)
+            for appointment in conn.appointments.get()
+            if (clinician_id is None or appointment["clinician_id"] == clinician_id)
+            and (patient_id is None or appointment["patient_id"] == patient_id)
+        ]
