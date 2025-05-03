@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from db import Database
 from models import (
@@ -48,12 +48,6 @@ class PatientController:
         for clinician in compatible_clinicians:
             available_slots += AvailabilityResponse.from_clinician(clinician)
 
-        # ASSUMPTION:
-        # All slots are already filtered to be in the future
-
-        # For assessments, we want to schedule both appointments 1 and 2 at the same time
-        # No more than 7 days apart, but not on the same day
-        # Populate the follow_up_slot property of all openings accordingly
         if appointment_category != AppointmentCategory.ASSESSMENT:
             return list(
                 sorted(
@@ -61,6 +55,9 @@ class PatientController:
                 )
             )
 
+        # For assessments, we want to schedule both appointments 1 and 2 at the same time
+        # No more than 7 days apart, but not on the same day
+        # Populate the follow_up_slot property of all openings accordingly
         availability_with_pairs: list[AvailabilityResponse] = []
         for availability in available_slots:
             availability_date = availability.slot.date
@@ -85,3 +82,37 @@ class PatientController:
                 key=lambda availability: availability.sort_fields,
             )
         )
+
+    def optimize_appointment_slots(
+        self,
+        all_availability: list[AvailabilityResponse],
+        duration: int,
+    ) -> list[AvailabilityResponse]:
+        """
+        For the given *sorted* list of availability, filter is so no 2 appointments are less than [duration]
+        minutes apart, maximizing the number of availability slots remaining
+
+        - all_availability *must* be sorted!
+        """
+
+        if not all_availability:
+            return []
+
+        # keep track of the last availability we've seen for each clinician
+        # map of clinician_id -> last availability slot seen
+        last: dict[str, datetime] = {}
+        filtered = []
+        for availability in all_availability:
+            clinician_id = availability.clinician_id
+            availability_start = availability.slot.date
+
+            if (most_recent_for_clinician := last.get(clinician_id)) is None:
+                last[clinician_id] = availability_start
+
+            elif availability_start >= (
+                most_recent_for_clinician + timedelta(minutes=duration)
+            ):
+                last[clinician_id] = availability_start
+                filtered.append(availability)
+
+        return filtered

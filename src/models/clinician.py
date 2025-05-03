@@ -40,6 +40,9 @@ class AvailableSlot(BaseModel):
         """
         Fetch all available slots for the given clinitian from the "database"
         """
+
+        # ASSUMPTION:
+        # The "database" is purged of availability that is in the past
         return [cls.model_validate(slot) for slot in conn.available_slots.get()]
 
 
