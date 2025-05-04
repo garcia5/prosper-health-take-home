@@ -6,10 +6,8 @@ from controllers.clinician_controller import ClinicianController
 from db import Database
 from models import AppointmentCategory, AvailabilityResponse, Patient
 
-DEFAULT_PATIENT_ID = (
-    "70801084-e022-4a09-a6ca-62103b3565eb"  # see ./db/data/patients.json for source
-)
-DEFAULT_APPOINTMENT_TYPE = "ASSESSMENT"  # see ./models/requests.py for options
+DEFAULT_PATIENT_NAME = "Alexander Garcia"
+DEFAULT_APPOINTMENT_TYPE = "ASSESSMENT"
 
 
 class App:
@@ -35,6 +33,12 @@ class App:
         compatible_clinians = self.clinician_controller.get_compatible_clinicians(
             patient, appointment_category
         )
+        if not compatible_clinians:
+            click.echo(
+                f"No clinicians supporting {appointment_category.value} appointments found in {patient.state.value} that accept {patient.insurance.value}",
+                err=True,
+            )
+            return []
 
         # Limit each clinician's availability so that
         # 1. only non-overlapping slots are shown
@@ -89,25 +93,38 @@ def cli(ctx: click.Context):
 
 @cli.command()
 @click.pass_obj
-# options commented out for easier testing
-# @click.option(
-#     "--patient-id",
-#     prompt=True,
-#     default=DEFAULT_PATIENT_ID,
-# )
-# @click.option(
-#     "--appointment-type",
-#     type=click.Choice([category.name for category in AppointmentCategory]),
-#     prompt=True,
-#     show_choices=True,
-#     default=DEFAULT_APPOINTMENT_TYPE,
-# )
+@click.option(
+    "--patient-name",
+    prompt=True,
+    default=DEFAULT_PATIENT_NAME,
+    type=click.Choice(["Alexander Garcia", "Byrne Hollander"]),
+)
+@click.option(
+    "--appointment-type",
+    type=click.Choice([category.name for category in AppointmentCategory]),
+    prompt=True,
+    show_choices=True,
+    default=DEFAULT_APPOINTMENT_TYPE,
+)
 def get_open_slots(
     app: App,
-    patient_id: str = DEFAULT_PATIENT_ID,
+    patient_name: str = DEFAULT_PATIENT_NAME,
     appointment_type: str = DEFAULT_APPOINTMENT_TYPE,
 ):
+    # see ./db/data/patients.json for source
+    match patient_name.lower():
+        case "alexander garcia":
+            patient_id = "70801084-e022-4a09-a6ca-62103b3565eb"
+        case "byrne hollander":
+            patient_id = "e4a0b4de-0ddd-43a4-84af-0e25f974cb01"
+        case _:
+            click.echo(f"Patient {patient_name} not found!", err=True)
+            return
+
     slots = app.get_available_slots(patient_id, AppointmentCategory[appointment_type])
+    if not slots:
+        return
+
     click.echo("Availability")
     click.echo("------------")
     for slot in slots:

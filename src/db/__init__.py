@@ -33,7 +33,9 @@ class Table:
         if id is None:
             return raw_data
 
-        return raw_data[0]
+        return next(
+            (row for row in raw_data if "id" in row and row["id"] == id), raw_data[0]
+        )
 
 
 @dataclass
