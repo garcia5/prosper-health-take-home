@@ -50,7 +50,6 @@ class ClinicianController:
 
         filtered_slots: list[AvailableSlot] = []
 
-        availability_counter = Counter()
         for slot in sorted(clinician.available_slots, key=lambda slot: slot.date):
             # slot is too close to the previous one: filter it out
             if filtered_slots and slot.date < (filtered_slots[-1].date + duration_span):
@@ -60,26 +59,18 @@ class ClinicianController:
 
             # check commitments for the current date - ignore any available slots if we're over
             # the clinician's limit
-            committed_for_date = (
-                availability_counter[slot_date] + appointment_counter[slot_date]
-            )
-            if committed_for_date >= clinician.max_daily_appointments:
+            if appointment_counter[slot_date] >= clinician.max_daily_appointments:
                 continue
 
             # check commitments over the past week
-            # ASSUMPTION: "week" means a calendar week (Sunday - Saturday, inclusive), rather
-            # than (Sunday - Sunday, inclusive)
-            committed_for_week = 0
+            appointments_for_week = 0
             for i in range(7):
                 date = slot_date - timedelta(days=i)
-                committed_for_week += (
-                    availability_counter[date] + appointment_counter[date]
-                )
+                appointments_for_week += appointment_counter[date]
 
-            if committed_for_week >= clinician.max_weekly_appointments:
+            if appointments_for_week >= clinician.max_weekly_appointments:
                 continue
 
-            availability_counter[slot_date] += 1
             filtered_slots.append(slot)
 
         return filtered_slots
