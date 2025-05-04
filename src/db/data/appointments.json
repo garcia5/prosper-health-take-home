@@ -1,1 +1,52 @@
-[]
+[
+    {
+        "id": "a3152852-b25c-4e56-a7cd-e5f679be0d11",
+        "patientId": "70801084-e022-4a09-a6ca-62103b3565eb",
+        "clinicianId": "9c516382-c5b2-4677-a7ac-4e100fa35bdd",
+        "scheduled_for": "2024-08-19T12:30:00.000Z",
+        "appointmentType": "ASSESSMENT_SESSION_1",
+        "status": "UPCOMING",
+        "createdAt": "2024-07-19T12:30:00.000Z",
+        "updatedAt": "2024-07-19T12:30:00.000Z"
+    },
+    {
+        "id": "d8076081-1918-4d48-85dc-87759ba9b9a6",
+        "patientId": "70801084-e022-4a09-a6ca-62103b3565eb",
+        "clinicianId": "9c516382-c5b2-4677-a7ac-4e100fa35bdd",
+        "scheduled_for": "2024-08-20T12:30:00.000Z",
+        "appointmentType": "ASSESSMENT_SESSION_2",
+        "status": "UPCOMING",
+        "createdAt": "2024-07-19T12:30:00.000Z",
+        "updatedAt": "2024-07-19T12:30:00.000Z"
+    },
+    {
+        "id": "70801084-e022-4a09-a6ca-62103b3565eb",
+        "patientId": "e4a0b4de-0ddd-43a4-84af-0e25f974cb01",
+        "clinicianId": "9c516382-c5b2-4677-a7ac-4e100fa35bdd",
+        "scheduled_for": "2024-08-19T15:00:00.000Z",
+        "appointmentType": "ASSESSMENT_SESSION_1",
+        "status": "UPCOMING",
+        "createdAt": "2024-07-19T12:30:00.000Z",
+        "updatedAt": "2024-07-19T12:30:00.000Z"
+    },
+    {
+        "id": "70801084-e022-4a09-a6ca-62103b3565eb",
+        "patientId": "e4a0b4de-0ddd-43a4-84af-0e25f974cb01",
+        "clinicianId": "9c516382-c5b2-4677-a7ac-4e100fa35bdd",
+        "scheduled_for": "2024-08-20T15:00:00.000Z",
+        "appointmentType": "ASSESSMENT_SESSION_2",
+        "status": "UPCOMING",
+        "createdAt": "2024-07-19T12:30:00.000Z",
+        "updatedAt": "2024-07-19T12:30:00.000Z"
+    },
+    {
+        "id": "2eeed177-1a48-4ce7-82ab-a7fc354aa018",
+        "patientId": "70801084-e022-4a09-a6ca-62103b3565eb",
+        "clinicianId": "e6a8f42d-8674-44fe-bfc1-05133d56b9d5",
+        "scheduled_for": "2024-08-21T15:00:00.000Z",
+        "appointmentType": "THERAPY_INTAKE",
+        "status": "UPCOMING",
+        "createdAt": "2024-07-19T12:30:00.000Z",
+        "updatedAt": "2024-07-19T12:30:00.000Z"
+    }
+]

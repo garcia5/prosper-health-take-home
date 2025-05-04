@@ -2,7 +2,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 from db import Database
 
@@ -27,6 +28,8 @@ class Appointment(BaseModel):
     """
     An Appointment represents a booked meeting between a patient and a clinician
     """
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     id: str = Field(default_factory=lambda: str(uuid4()))
     """Unique appointment identifier"""
@@ -66,6 +69,6 @@ class Appointment(BaseModel):
         return [
             cls.model_validate(appointment)
             for appointment in conn.appointments.get()
-            if (clinician_id is None or appointment["clinician_id"] == clinician_id)
-            and (patient_id is None or appointment["patient_id"] == patient_id)
+            if (clinician_id is None or appointment["clinicianId"] == clinician_id)
+            and (patient_id is None or appointment["patientId"] == patient_id)
         ]

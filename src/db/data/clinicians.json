@@ -8,5 +8,15 @@
         "clinicianType": "PSYCHOLOGIST",
         "maxDailyAppointments": 2,
         "maxWeeklyAppointments": 8
+    },
+    {
+        "id": "e6a8f42d-8674-44fe-bfc1-05133d56b9d5",
+        "firstName": "John",
+        "lastName": "James",
+        "states": ["NY"],
+        "insurances": ["AETNA"],
+        "clinicianType": "THERAPIST",
+        "maxDailyAppointments": 1,
+        "maxWeeklyAppointments": 2
     }
 ]
