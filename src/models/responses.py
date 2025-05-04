@@ -24,21 +24,10 @@ class AvailabilityResponse:
     """The slot of time which is available"""
 
     follow_up_slot: AvailableSlot | None = None
-    """If the appointment type requestsed requires a follow up, include that related available slot here"""
-    """ASSUMPTION: follow up, if any, must be with the same psychatrist as the first appointment"""
-
-    @classmethod
-    def with_follow_up(cls, other: Self, follow_up_slot: AvailableSlot) -> Self:
-        """
-        Copy an existing available slot to add a follow up time
-        """
-        return cls(
-            clinician_first_name=other.clinician_first_name,
-            clinician_last_name=other.clinician_last_name,
-            clinician_id=other.clinician_id,
-            slot=other.slot,
-            follow_up_slot=follow_up_slot,
-        )
+    """
+    If the appointment type requestsed requires a follow up, include that related available slot here
+    ASSUMPTION: follow up, if any, must be with the same psychatrist as the first appointment
+    """
 
     @classmethod
     def from_clinician(

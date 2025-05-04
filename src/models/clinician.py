@@ -1,9 +1,8 @@
 from datetime import datetime
 from enum import Enum
-from itertools import groupby
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from db import Database
@@ -149,55 +148,3 @@ class Clinician(BaseModel):
         return (
             f"[{self.clinician_type.value.upper()}] {self.first_name} {self.last_name}"
         )
-
-    def __repr__(self):
-        return f"Clinician(type={self.clinician_type}, id={self.id[:8]}...{self.id[-8:]}, first_name={self.first_name}, last_name={self.last_name})"
-
-    @model_validator(mode="after")
-    def appointments_must_be_for_clinician(self):
-        if any(
-            appointment.clinician_id != self.id for appointment in self.appointments
-        ):
-            raise ValueError(
-                f"All appointments for {self} must be for clinician_id {self.id}"
-            )
-
-        return self
-
-    @model_validator(mode="after")
-    def respect_max_appointments(self):
-        for day, daily_appointments in groupby(
-            self.appointments, key=lambda appt: appt.scheduled_for.date
-        ):
-            num_daily_appointments = len(list(daily_appointments))
-            if num_daily_appointments > self.max_daily_appointments:
-                raise ValueError(
-                    f"Clinician {self} can only accept up to {self.max_daily_appointments} per day (found {num_daily_appointments} for {day})"
-                )
-
-        for (week_num, year), weekly_appointments in groupby(
-            self.appointments,
-            key=lambda appt: (
-                appt.scheduled_for.isocalendar()[1],
-                appt.scheduled_for.year,
-            ),
-        ):
-            num_weekly_appointments = len(list(weekly_appointments))
-            if num_weekly_appointments > self.max_weekly_appointments:
-                raise ValueError(
-                    f"Clinician {self} can only accept up to {self.max_weekly_appointments} per week (found {num_weekly_appointments} for week {week_num}, {year})"
-                )
-
-        return self
-
-    @model_validator(mode="after")
-    def correct_appointment_type(self):
-        if any(
-            appointment.appointment_type not in self.allowed_appointment_types
-            for appointment in self.appointments
-        ):
-            raise ValueError(
-                f"Clinician {self} can only acccept {self.allowed_appointment_types} appointments"
-            )
-
-        return self

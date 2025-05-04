@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from db import Database
@@ -44,9 +44,6 @@ class Patient(BaseModel):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    def __repr__(self):
-        return f"Patient(id={self.id[:8]}...{self.id[-8:]}, first_name={self.first_name}, last_name={self.last_name}, state={self.state.value}, insurance={self.insurance.value})"
-
     @classmethod
     def load_all(cls, conn: Database):
         """
@@ -70,12 +67,3 @@ class Patient(BaseModel):
                 "appointments": Appointment.load(conn, patient_id=patient_id),
             }
         )
-
-    @model_validator(mode="after")
-    def appointments_for_self(self):
-        if any(appointment.patient_id != self.id for appointment in self.appointments):
-            raise ValueError(
-                f"All appointments for {self} must be for patient_id {self.id}"
-            )
-
-        return self
