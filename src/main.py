@@ -122,7 +122,10 @@ def get_open_slots(
             return
 
     slots = app.get_available_slots(patient_id, AppointmentCategory[appointment_type])
+
     if not slots:
+        click.echo("No Availability")
+        click.echo("---------------")
         return
 
     click.echo("Availability")

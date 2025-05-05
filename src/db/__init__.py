@@ -17,9 +17,6 @@ class Table:
     @overload
     def get(self) -> list[dict]: ...
 
-    @overload
-    def get(self, id: None) -> list[dict]: ...
-
     def get(self, id: str | None = None) -> list[dict] | dict:
         """
         Load item(s) from this table
